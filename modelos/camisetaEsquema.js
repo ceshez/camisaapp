@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 const CamisetaSchema = new Schema({
-  creador: String,
+  creador: {type: Schema.Types.ObjectId, ref: 'Usuario'},
   torsoColor: String,
   mangaIzqColor: String,
   mangaDerColor: String,

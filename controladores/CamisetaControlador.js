@@ -1,12 +1,54 @@
 const Camiseta = require('../modelos/camisetaEsquema');
+const Usuario = require('../modelos/usuarioEsquema')
 
 // Obtener todos los usuarios
 exports.obtenerCamiseta = async (req, res) => {
   try {
-    const camisetas = await Camiseta.find();    // Busca todos los documentos de usuarios en la BD
-    res.json(camisetas);                       // Responde con la lista en formato JSON
+    const camisetas = await Camiseta.find();  // Lista de camisetas desde la coleccion (ejemplo)
+    // Enriquecer cada camiseta con datos del usuario creador:
+      const camisetasConUsuario = await Promise.all(
+        camisetas.map(async (c) => {
+    try {
+      // Buscar al usuario por ID (c.creador) y seleccionar solo nombre y correo
+      const usuario = await Usuario.findById(c.creador).select('nombre correo');
+      return {
+        ...c.toObject(),        // Convertir el documento de Mongoose a objeto plano JS
+        creador: usuario || null // Reemplazar el campo 'creador' con los datos del usuario (o null si no se encontró)
+      };
+    } catch (error) {
+      // En caso de error al buscar usuario, devolvemos la camiseta con 'creador' null
+      return {
+        ...c.toObject(),
+        creador: null
+      };
+    }
+  })
+);
+    res.json(camisetasConUsuario);                       // Responde con la lista en formato JSON
   } catch (error) {
     res.status(500).json({ error: 'Error del servidor' }); // Error genérico en caso de fallo
+  }
+};
+
+exports.updateCamisetaVoto = async (id, valor) => {
+  try {
+    const resp = await fetch(`/api/camisetas/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer <TU_TOKEN_AQUI>'
+      },
+      body: JSON.stringify({ calificacion: valor })
+    });
+    if (!resp.ok) {
+      throw new Error('Error al enviar voto');
+    }
+    // Se asume que el servidor devuelve la camiseta actualizada o un status 200
+    console.log(`Voto enviado para camiseta ${id}: ${valor}`);
+    // Volver a cargar las camisetas para actualizar la UI con la nueva calificación
+    await loadCamisetas();
+  } catch (error) {
+    console.error('Error votando camiseta:', error);
   }
 };
 
@@ -29,6 +71,8 @@ exports.crearCamiseta = async (req, res) => {
     const datosActualizados = req.body;
 
     const nuevaCamiseta = new Camiseta(datosActualizados);
+
+    nuevaCamiseta.creador = req.usuarioId; 
     const camisetaGuardada = await nuevaCamiseta.save();      // Guardamos en la base de datos
     res.status(201).json(camisetaGuardada);    // Devolvemos el usuario creado con código 201 (Creado)
   } catch (error) {
@@ -40,6 +84,7 @@ exports.crearCamiseta = async (req, res) => {
 exports.actualizarCamiseta = async (req, res) => {
   try {
     const datosActualizados = req.body;
+// Asignar el ID del creador desde el token  
     const camisetaActualizada = await Camiseta.findByIdAndUpdate(
       req.params.id,
       datosActualizados,
@@ -50,6 +95,7 @@ exports.actualizarCamiseta = async (req, res) => {
     }
     res.json(camisetaActualizada);
   } catch (error) {
+    console.error(error)
     res.status(400).json({ error: 'Error al actualizar camiseta' });
   }
 };

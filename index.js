@@ -4,11 +4,11 @@ const express = require('express');
 const routes = require('./routing/rutasUsuario');
 const routesCamiseta = require('./routing/rutasCamiseta');
 const { verificarToken } = require('./seguridad/auth');
-
+require('dotenv').config();
 
 // URI de conexión a MongoDB (MongoDB Atlas en este caso). 
 // Reemplaza <usuario>, <password> y <tuBase> por tus datos reales.
-const mongoURI = 'mongodb+srv://2021114:123@cluster0.lturit1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const mongoURI = process.env.DB_HOST;
 
 // Opciones recomendadas para evitar advertencias (según la versión de Mongoose)
 const options = {
@@ -37,6 +37,9 @@ app.get('/registro', (req, res) => {
 });
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html')); 
+});
+app.get('/carrusel', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'carrusel.html')); 
 });
 
 app.listen(PORT, ()=>{
