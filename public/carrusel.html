@@ -3,75 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Carrusel de Camisetas</title>
     <style>
-        /* Contenedor del carrusel */
-.carousel {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;   /* Scroll horizontal con encaje obligatorio */
-  scroll-behavior: smooth;        /* Desplazamiento suave */
-  -webkit-overflow-scrolling: touch; /* Suaviza scroll en iOS */
-}
-/* Ocultar la barra de scroll (opcional) */
-.carousel::-webkit-scrollbar {
-  display: none;
-}
-.carousel {
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE/Edge legacy */
-}
-
-/* Tarjetas del carrusel */
-.card {
-  flex-shrink: 0;        /* Evita que la tarjeta se encoja más allá de su contenido */
-  flex-basis: 200px;     /* Ancho base de cada tarjeta (puedes ajustarlo) */
-  scroll-snap-align: start;  /* Encaja al inicio del contenedor al hacer scroll */
-  margin-right: 1rem;    /* Separación entre tarjetas */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 1rem;
-  background: #fafafa;
-}
-/* Opcional: última tarjeta sin margen derecho extra */
-.card:last-child {
-  margin-right: 0;
-}
-
-/* Estilos internos de la tarjeta */
-.shirt-preview {
-  margin-bottom: 0.5rem;
-}
-.creator-name {
-  font-size: 1.1rem;
-  margin: 0.5rem 0 0.25rem;
-}
-.rating, .creation-date {
-  font-size: 0.9rem;
-  margin: 0.25rem 0;
-}
-button.like-btn, button.dislike-btn {
-  margin: 0.5rem 0.5rem 0 0;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-button.like-btn { background-color: #4caf50; color: #fff; }
-button.dislike-btn { background-color: #f44336; color: #fff; }
-button.like-btn:hover { background-color: #45a049; }
-button.dislike-btn:hover { background-color: #e53935; }
-
+        .carousel {
+          display: flex;
+          flex-direction: row;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+        }
+        .carousel::-webkit-scrollbar {
+          display: none;
+        }
+        .carousel {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .card {
+          flex-shrink: 0;
+          flex-basis: 200px;
+          scroll-snap-align: start;
+          margin-right: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          padding: 1rem;
+          background: #fafafa;
+        }
+        .card:last-child {
+          margin-right: 0;
+        }
+        .shirt-preview {
+          margin-bottom: 0.5rem;
+        }
+        .nombre-creador {
+          font-size: 1.1rem;
+          margin: 0.5rem 0 0.25rem;
+        }
+        .calificacion, .fecha {
+          font-size: 0.9rem;
+          margin: 0.25rem 0;
+        }
+        button.btn-like, button.btn-dislike {
+          margin: 0.5rem 0.5rem 0 0;
+          padding: 0.4rem 0.8rem;
+          border: none;
+          border-radius: 3px;
+          cursor: pointer;
+        }
+        button.btn-like { background-color: #4caf50; color: #fff; }
+        button.btn-dislike { background-color: #f44336; color: #fff; }
+        button.btn-like:hover { background-color: #45a049; }
+        button.btn-dislike:hover { background-color: #e53935; }
     </style>
 </head>
 <body>
-    <div class="carousel" id="carousel">
+    <div class="carousel" id="contenedor-camisetas">
     <!-- Las tarjetas se insertarán aquí dinámicamente con JS -->
     </div>
-
-  <!-- ...más tarjetas -->
-</div>
 
 <script>
 function formatearFecha(isoDate) {
@@ -79,120 +68,54 @@ function formatearFecha(isoDate) {
   return new Date(isoDate).toLocaleDateString('es-ES', opciones);
 }
 function generarMiniatura(c) {
-return `
-<svg class="miniatura" viewBox="1 2 26 14">
-<path d="M 4 8 M 5 3 L 5 6 L 3 7 L 1 5" fill="${c.mangaIzqColor}" />
-<path d="M 9 5 L 7 3 L 5 3 L 5 6 L 5 12 L 13 12 L 13 6 L 13 3 L 11 3" fill="${c.torsoColor}" />
-<path d="M 13 6 L 13 3 L 17 5 L 15 7" fill="${c.mangaDerColor}" />
-<path d="M 8 2 L 7 3 L 9 5 L 8 3" fill="${c.cuelloIzqColor}" />
-<path d="M 10 2 L 11 3 L 9 5 L 10 3 M 1 4" fill="${c.cuelloDerColor}" />
-</svg>`;
+  return `
+  <svg class="miniatura" viewBox="1 2 26 14">
+    <path d="M 4 8 M 5 3 L 5 6 L 3 7 L 1 5" fill="${c.mangaIzqColor}" />
+    <path d="M 9 5 L 7 3 L 5 3 L 5 6 L 5 12 L 13 12 L 13 6 L 13 3 L 11 3" fill="${c.torsoColor}" />
+    <path d="M 13 6 L 13 3 L 17 5 L 15 7" fill="${c.mangaDerColor}" />
+    <path d="M 8 2 L 7 3 L 9 5 L 8 3" fill="${c.cuelloIzqColor}" />
+    <path d="M 10 2 L 11 3 L 9 5 L 10 3 M 1 4" fill="${c.cuelloDerColor}" />
+  </svg>`;
 }
-// Función principal para cargar las camisetas y generar el carrusel
-async function loadCamisetas() {
-  try {
-    // Petición GET al backend para obtener la lista de camisetas
-    const resp = await fetch('/api/camisetas', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer <TU_TOKEN_AQUI>'
-      }
-    });
-    if (!resp.ok) {
-      throw new Error('Error al obtener las camisetas');
-    }
-    const camisetas = await resp.json();
-
-    // Obtener el contenedor del carrusel
-    const carousel = document.getElementById('carousel');
-    carousel.innerHTML = '';  // Limpiar contenido actual
-
-    // Recorrer los datos de cada camiseta y crear dinámicamente la tarjeta
-    camisetas.forEach(camiseta => {
-      // Crear el elemento tarjeta
-      const card = document.createElement('div');
-      card.classList.add('card');
-
-      // Construir el HTML interno de la tarjeta usando template strings
-      card.innerHTML = `
-        <div class="shirt-preview">
-          <svg width="40" height="40">
-            <rect width="20" height="40" fill="${camiseta.colorPrimario}" />
-            <rect x="20" width="20" height="40" fill="${camiseta.colorSecundario}" />
-          </svg>
-        </div>
-        <h3 class="creator-name">${camiseta.creador}</h3>
-        <p class="rating">Calificación: ${camiseta.calificacion}</p>
-        <p class="creation-date">Creado el: ${formatearFecha(camiseta.fechaCreacion)}</p>
-      `;
-
-      // Crear botones Me gusta / No me gusta
-      const likeBtn = document.createElement('button');
-      likeBtn.className = 'like-btn';
-      likeBtn.textContent = 'Me gusta';
-
-      const dislikeBtn = document.createElement('button');
-      dislikeBtn.className = 'dislike-btn';
-      dislikeBtn.textContent = 'No me gusta';
-
-      // Agregar manejadores de evento para los votos
-      likeBtn.addEventListener('click', () => votarCamiseta(camiseta.id, 1));
-      dislikeBtn.addEventListener('click', () => votarCamiseta(camiseta.id, -1));
-
-      // Adjuntar botones a la tarjeta
-      card.appendChild(likeBtn);
-      card.appendChild(dislikeBtn);
-
-      // Finalmente, agregar la tarjeta completa al carrusel
-      carousel.appendChild(card);
-    });
-  } catch (error) {
-    console.error('Error cargando camisetas:', error);
-  }
-}
-
-// Cargar las camisetas al iniciar la página
-loadCamisetas();
 
 async function cargarCamisetas() {
-try {
-const resp = await fetch('/api/camisetas', {
-headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-});
-const camisetas = await resp.json();
+  try {
+    const resp = await fetch('/api/camisetas', {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const camisetas = await resp.json();
 
-const contenedor = document.getElementById('contenedor-camisetas');
-contenedor.innerHTML = ''; // Limpiar carrusel
+    const contenedor = document.getElementById('contenedor-camisetas');
+    contenedor.innerHTML = ''; // Limpiar carrusel
 
-camisetas.forEach(c => {
-let nombre = 'Desconocido';
-if (c.creador && typeof c.creador === 'object') {
-nombre = c.creador.nombre || c.creador.correo || 'Usuario';
-} else if (typeof c.creador === 'string') {
-nombre = c.creador;
-}
+    camisetas.forEach(c => {
+      let nombre = 'Desconocido';
+      if (c.creador && typeof c.creador === 'object') {
+        nombre = c.creador.nombre || c.creador.correo || 'Usuario';
+      } else if (typeof c.creador === 'string') {
+        nombre = c.creador;
+      }
 
-const calificacion = typeof c.calificacion === 'number' ? c.calificacion.toFixed(1) : '0.0';
+      const calificacion = typeof c.calificacion === 'number' ? c.calificacion.toFixed(1) : '0.0';
 
-const card = document.createElement('div');
-card.classList.add('card');
-card.innerHTML = `
-${generarMiniatura(c)}
-<div class="nombre-creador">${nombre}</div>
-<div class="calificacion">Calificación: ⭐ ${calificacion}</div>
-<div class="fecha">${new Date(c.fechaCreacion).toLocaleDateString()}</div>
-<div class="botones-reaccion">
-<button class="btn-like" onclick="reaccion('${c._id}', 1)">Me gusta</button>
-<button class="btn-dislike" onclick="reaccion('${c._id}', -1)">No me gusta</button>
-</div>
-`;
-contenedor.appendChild(card);
-});
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.innerHTML = `
+        <div class="shirt-preview">${generarMiniatura(c)}</div>
+        <div class="nombre-creador">${nombre}</div>
+        <div class="calificacion">Calificación: ⭐ ${calificacion}</div>
+        <div class="fecha">${formatearFecha(c.fechaCreacion)}</div>
+        <div class="botones-reaccion">
+          <button class="btn-like" onclick="reaccion('${c._id}', 1)">Me gusta</button>
+          <button class="btn-dislike" onclick="reaccion('${c._id}', -1)">No me gusta</button>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
 
-} catch (error) {
-console.error('Error al cargar camisetas:', error);
-}
+  } catch (error) {
+    console.error('Error al cargar camisetas:', error);
+  }
 }
 
 // Enviar voto a la API y actualizar carrusel
@@ -219,7 +142,9 @@ alert('Error al votar: ' + error.error);
 alert('Error al conectar con el servidor');
 }
 }
+window.reaccion = reaccion;
+// Cargar las camisetas al iniciar la página
+cargarCamisetas();
 </script>
 </body>
-
 </html>
